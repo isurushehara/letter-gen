@@ -13,6 +13,7 @@ export default function Home() {
     const [templates, setTemplates] = useState<Template[]>([]);
     const navigate = useNavigate();
     const [search, setSearch] = useState("");
+    const [categoryFilter, setCategoryFilter] = useState("");
 
     useEffect(() => {
         fetch("http://localhost:5000/api/templates")
@@ -31,26 +32,38 @@ export default function Home() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
             />
+            <select
+                className="mb-4 p-2 border rounded w-full"
+                onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+                <option value="">All Categories</option>
+                <option value="Formal">Formal</option>
+                <option value="Business">Business</option>
+                <option value="Academic">Academic</option>
+            </select>
             <div className="grid gap-4">
-            {templates
-  .filter(t => t.title.toLowerCase().includes(search.toLowerCase()))
-  .map(template => (
-                    <div
-                        key={template.id}
-                        className="bg-white p-5 rounded shadow"
-                    >
-                        <h2 className="text-xl font-semibold">{template.title}</h2>
-                        <p>Category: {template.category}</p>
-                        <p>Tone: {template.tone}</p>
-
-                        <button
-                            onClick={() => navigate(`/generator/${template.id}`)}
-                            className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
+                {templates
+                    .filter(t =>
+                        (categoryFilter === "" || t.category === categoryFilter) &&
+                        t.title.toLowerCase().includes(search.toLowerCase())
+                    )
+                    .map(template => (
+                        <div
+                            key={template.id}
+                            className="bg-white p-5 rounded shadow"
                         >
-                            Use Template
-                        </button>
-                    </div>
-                ))}
+                            <h2 className="text-xl font-semibold">{template.title}</h2>
+                            <p>Category: {template.category}</p>
+                            <p>Tone: {template.tone}</p>
+
+                            <button
+                                onClick={() => navigate(`/generator/${template.id}`)}
+                                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
+                            >
+                                Use Template
+                            </button>
+                        </div>
+                    ))}
             </div>
         </div>
     );
