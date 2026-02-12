@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Template {
   id: string;
@@ -8,8 +9,9 @@ interface Template {
   audience: string;
 }
 
-function App() {
+export default function Home() {
   const [templates, setTemplates] = useState<Template[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:5000/api/templates")
@@ -25,17 +27,21 @@ function App() {
         {templates.map((template) => (
           <div
             key={template.id}
-            className="bg-white p-5 rounded-lg shadow hover:shadow-lg transition"
+            className="bg-white p-5 rounded shadow"
           >
             <h2 className="text-xl font-semibold">{template.title}</h2>
-            <p className="text-gray-600">Category: {template.category}</p>
-            <p className="text-gray-600">Tone: {template.tone}</p>
-            <p className="text-gray-600">Audience: {template.audience}</p>
+            <p>Category: {template.category}</p>
+            <p>Tone: {template.tone}</p>
+
+            <button
+              onClick={() => navigate(`/generator/${template.id}`)}
+              className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Use Template
+            </button>
           </div>
         ))}
       </div>
     </div>
   );
 }
-
-export default App;
