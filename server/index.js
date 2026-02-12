@@ -11,11 +11,14 @@ app.get("/", (req, res) => {
 });
 
 const prisma = require("./prismaClient");
+const templateRoutes = require("./routes/templateRoutes");
 
 app.get("/test-db", async (req, res) => {
   const templates = await prisma.template.findMany();
   res.json(templates);
 });
+
+app.use("/api/templates", templateRoutes);
 
 const PORT = 5000;
 app.listen(PORT, () => {
