@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import RichEditor from "../components/RichEditor";
 
 export default function Generator() {
   const { id } = useParams();
@@ -36,14 +37,19 @@ export default function Generator() {
       content = content.replace(regex, value);
     });
 
-    setGeneratedLetter(content);
+    // Convert line breaks to HTML
+    const formattedContent = content
+      .replace(/\n\n/g, "</p><p>")
+      .replace(/\n/g, "<br />");
+
+    setGeneratedLetter(`<p>${formattedContent}</p>`);
   }, [formData, template]);
 
   if (!template) return <p className="p-8">Loading...</p>;
 
   return (
     <div className="min-h-screen bg-gray-100 p-8 grid md:grid-cols-2 gap-8">
-      
+
       {/* LEFT SIDE - FORM */}
       <div>
         <h2 className="text-xl font-bold mb-4">Fill Details</h2>
@@ -89,10 +95,9 @@ export default function Generator() {
       <div>
         <h2 className="text-xl font-bold mb-4">Live Preview</h2>
 
-        <textarea
-          className="w-full h-96 p-4 border rounded"
-          value={generatedLetter}
-          onChange={(e) => setGeneratedLetter(e.target.value)}
+        <RichEditor
+          content={generatedLetter}
+          onChange={(value) => setGeneratedLetter(value)}
         />
       </div>
     </div>
