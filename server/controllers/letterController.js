@@ -14,7 +14,7 @@ exports.createLetter = async (req, res) => {
         title,
         content,
         language,
-        userId: "TEMP_USER_ID", // temporary until auth added
+        //userId: "TEMP_USER_ID", // temporary until auth added
       },
     });
 
