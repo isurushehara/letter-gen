@@ -100,6 +100,32 @@ export default function Generator() {
           onChange={(value) => setGeneratedLetter(value)}
         />
       </div>
+
+      <button
+        onClick={async () => {
+          const response = await fetch("http://localhost:5000/api/letters", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: template.title,
+              content: generatedLetter,
+              language: template.language,
+            }),
+          });
+
+          if (response.ok) {
+            alert("Letter saved successfully!");
+          } else {
+            alert("Failed to save letter");
+          }
+        }}
+        className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
+      >
+        Save Letter
+      </button>
+
     </div>
   );
 }

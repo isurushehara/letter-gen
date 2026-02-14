@@ -5,6 +5,7 @@ const cors = require("cors");
 // 2️⃣ Import local modules
 const prisma = require("./prismaClient");
 const templateRoutes = require("./routes/templateRoutes");
+const letterRoutes = require("./routes/letterRoutes");
 
 // 3️⃣ Initialize Express app
 const app = express();
@@ -26,6 +27,7 @@ app.get("/test-db", async (req, res) => {
 
 // 7️⃣ API routes
 app.use("/api/templates", templateRoutes);
+app.use("/api/letters", letterRoutes);
 
 // 8️⃣ Start server
 const PORT = 5000;

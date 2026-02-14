@@ -20,7 +20,6 @@ model User {
   password  String
   role      String   @default("USER")
   createdAt DateTime @default(now())
-  letters   Letter[]
 }
 
 model Template {
@@ -39,7 +38,5 @@ model Letter {
   title     String
   content   String
   language  String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }
