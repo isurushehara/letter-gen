@@ -23,6 +23,13 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-gray-100 p-8">
+            <button
+                onClick={() => navigate("/letters")}
+                className="mb-4 bg-green-600 text-white px-4 py-2 rounded"
+            >
+                View Saved Letters
+            </button>
+
             <h1 className="text-3xl font-bold mb-6">Letter Templates</h1>
 
             <input
