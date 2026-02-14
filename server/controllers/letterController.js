@@ -24,3 +24,18 @@ exports.createLetter = async (req, res) => {
     res.status(500).json({ error: "Failed to save letter" });
   }
 };
+
+// GET ALL LETTERS
+exports.getLetters = async (req, res) => {
+  try {
+    const letters = await prisma.letter.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json(letters);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch letters" });
+  }
+};
+
+
