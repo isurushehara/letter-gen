@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RichEditor from "../components/RichEditor";
+import html2pdf from "html2pdf.js";
 
 export default function LetterView() {
   const { id } = useParams();
@@ -32,7 +33,9 @@ export default function LetterView() {
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-2xl font-bold mb-4">{letter.title}</h1>
 
-      <RichEditor content={content} onChange={setContent} />
+      <div id="letter-content">
+        <RichEditor content={content} onChange={setContent} />
+      </div>
 
       <button
         onClick={handleUpdate}
@@ -40,6 +43,28 @@ export default function LetterView() {
       >
         Update Letter
       </button>
+
+      <button
+        onClick={() => {
+          const element = document.getElementById("letter-content");
+          if (!element) return;
+
+          const opt: any = {
+            margin: 0.5,
+            filename: `${letter.title}.pdf`,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+          };
+
+
+          html2pdf().set(opt).from(element).save();
+        }}
+        className="mt-4 ml-4 bg-green-600 text-white px-4 py-2 rounded"
+      >
+        Download PDF
+      </button>
+
     </div>
   );
 }
