@@ -87,31 +87,45 @@ exports.generatePDF = async (req, res) => {
     const browser = await puppeteer.launch({
       executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
       headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
-
 
     const page = await browser.newPage();
 
     // Create full HTML document
     const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8" />
-        <style>
-          body {
-            font-family: "Times New Roman", serif;
-            padding: 80px;
-            font-size: 16px;
-            line-height: 1.8;
-          }
-        </style>
-      </head>
-      <body>
-        ${content}
-      </body>
-      </html>
-    `;
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @page {
+      size: A4;
+      margin: 1in;
+    }
+
+    body {
+      font-family: "Times New Roman", serif;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .letter-container {
+      width: 100%;
+    }
+
+    p {
+      margin: 0 0 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="letter-container">
+    ${content}
+  </div>
+</body>
+</html>
+`;
 
     await page.setContent(html, { waitUntil: "networkidle0" });
 
