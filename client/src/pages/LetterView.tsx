@@ -33,9 +33,31 @@ export default function LetterView() {
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-2xl font-bold mb-4">{letter.title}</h1>
 
-      <div id="letter-content">
-        <RichEditor content={content} onChange={setContent} />
+      <RichEditor content={content} onChange={setContent} />
+      {/* Hidden Clean Export Layout */}
+      <div
+        id="pdf-export"
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          top: "0",
+        }}
+      >
+        <div
+          style={{
+            width: "794px",
+            minHeight: "1123px",
+            padding: "96px",
+            fontFamily: "Times New Roman, serif",
+            fontSize: "16px",
+            lineHeight: "1.8",
+            backgroundColor: "white",
+          }}
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
       </div>
+
+
 
       <button
         onClick={handleUpdate}
@@ -46,20 +68,41 @@ export default function LetterView() {
 
       <button
         onClick={() => {
-          const element = document.getElementById("letter-content");
-          if (!element) return;
+          const element = document.createElement("div");
+
+          element.innerHTML = `
+    <div style="
+      width: 794px;
+      min-height: 1123px;
+      padding: 96px;
+      font-family: 'Times New Roman', serif;
+      font-size: 16px;
+      line-height: 1.8;
+      background: white;
+    ">
+      ${content}
+    </div>
+  `;
+
+          document.body.appendChild(element);
 
           const opt: any = {
-            margin: 0.5,
+            margin: 0,
             filename: `${letter.title}.pdf`,
             image: { type: "jpeg", quality: 0.98 },
             html2canvas: { scale: 2 },
-            jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+            jsPDF: { unit: "px", format: [794, 1123], orientation: "portrait" },
           };
 
-
-          html2pdf().set(opt).from(element).save();
+          html2pdf()
+            .set(opt)
+            .from(element)
+            .save()
+            .then(() => {
+              document.body.removeChild(element);
+            });
         }}
+
         className="mt-4 ml-4 bg-green-600 text-white px-4 py-2 rounded"
       >
         Download PDF
