@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RichEditor from "../components/RichEditor";
-import html2pdf from "html2pdf.js";
 
 export default function LetterView() {
   const { id } = useParams();
@@ -67,42 +66,31 @@ export default function LetterView() {
       </button>
 
       <button
-        onClick={() => {
-          const element = document.createElement("div");
+        onClick={async () => {
+          const response = await fetch(
+            "http://localhost:5000/api/letters/generate-pdf",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                content,
+                title: letter.title,
+              }),
+            }
+          );
 
-          element.innerHTML = `
-    <div style="
-      width: 794px;
-      min-height: 1123px;
-      padding: 96px;
-      font-family: 'Times New Roman', serif;
-      font-size: 16px;
-      line-height: 1.8;
-      background: white;
-    ">
-      ${content}
-    </div>
-  `;
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
 
-          document.body.appendChild(element);
-
-          const opt: any = {
-            margin: 0,
-            filename: `${letter.title}.pdf`,
-            image: { type: "jpeg", quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: "px", format: [794, 1123], orientation: "portrait" },
-          };
-
-          html2pdf()
-            .set(opt)
-            .from(element)
-            .save()
-            .then(() => {
-              document.body.removeChild(element);
-            });
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${letter.title}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
         }}
-
         className="mt-4 ml-4 bg-green-600 text-white px-4 py-2 rounded"
       >
         Download PDF
