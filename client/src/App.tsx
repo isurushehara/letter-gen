@@ -5,10 +5,13 @@ import Letters from "./pages/Letters";
 import LetterView from "./pages/LetterView";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Navbar from "./components/Navbar";
+
 
 function App() {
   return (
     <Routes>
+      <Navbar />
       <Route path="/" element={<Home />} />
       <Route path="/generator/:id" element={<Generator />} />
       <Route path="/letters" element={<Letters />} />
