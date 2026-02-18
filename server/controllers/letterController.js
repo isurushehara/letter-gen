@@ -1,4 +1,5 @@
 const prisma = require("../prismaClient");
+const puppeteer = require("puppeteer-core");
 
 // CREATE LETTER
 exports.createLetter = async (req, res) => {
@@ -74,5 +75,76 @@ exports.updateLetter = async (req, res) => {
   }
 };
 
+// GENERATE PDF
+exports.generatePDF = async (req, res) => {
+  try {
+    const { content, title } = req.body;
 
+    if (!content) {
+      return res.status(400).json({ error: "Content is required" });
+    }
+
+    const browser = await puppeteer.launch({
+      executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+
+    const page = await browser.newPage();
+
+    // Create full HTML document
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @page {
+      size: A4;
+      margin: 1in;
+    }
+
+    body {
+      font-family: "Times New Roman", serif;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .letter-container {
+      width: 100%;
+    }
+
+    p {
+      margin: 0 0 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="letter-container">
+    ${content}
+  </div>
+</body>
+</html>
+`;
+
+    await page.setContent(html, { waitUntil: "networkidle0" });
+
+    const pdf = await page.pdf({
+      format: "A4",
+      printBackground: true,
+    });
+
+    await browser.close();
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${title || "letter"}.pdf"`,
+    });
+
+    res.send(pdf);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to generate PDF" });
+  }
+};
 

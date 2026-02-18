@@ -33,6 +33,30 @@ export default function LetterView() {
       <h1 className="text-2xl font-bold mb-4">{letter.title}</h1>
 
       <RichEditor content={content} onChange={setContent} />
+      {/* Hidden Clean Export Layout */}
+      <div
+        id="pdf-export"
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          top: "0",
+        }}
+      >
+        <div
+          style={{
+            width: "794px",
+            minHeight: "1123px",
+            padding: "96px",
+            fontFamily: "Times New Roman, serif",
+            fontSize: "16px",
+            lineHeight: "1.8",
+            backgroundColor: "white",
+          }}
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      </div>
+
+
 
       <button
         onClick={handleUpdate}
@@ -40,6 +64,38 @@ export default function LetterView() {
       >
         Update Letter
       </button>
+
+      <button
+        onClick={async () => {
+          const response = await fetch(
+            "http://localhost:5000/api/letters/generate-pdf",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                content,
+                title: letter.title,
+              }),
+            }
+          );
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${letter.title}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }}
+        className="mt-4 ml-4 bg-green-600 text-white px-4 py-2 rounded"
+      >
+        Download PDF
+      </button>
+
     </div>
   );
 }
