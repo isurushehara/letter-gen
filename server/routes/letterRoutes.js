@@ -10,7 +10,7 @@ router.get("/:id", letterController.getLetterById);
 router.put("/:id", letterController.updateLetter);
 router.post("/generate-pdf", letterController.generatePDF);
 router.post("/", authenticate, letterController.createLetter);
-router.post("/", authenticate, templateController.createTemplate);
-router.delete("/:id", authenticate, authorizeAdmin, templateController.deleteTemplate);
+//router.post("/", authenticate, templateController.createTemplate);
+//router.delete("/:id", authenticate, authorizeAdmin, templateController.deleteTemplate);
 
 module.exports = router;

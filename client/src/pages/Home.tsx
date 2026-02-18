@@ -15,6 +15,8 @@ export default function Home() {
     const [search, setSearch] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
 
+    const token = localStorage.getItem("token");
+
     useEffect(() => {
         fetch("http://localhost:5000/api/templates")
             .then((res) => res.json())
@@ -64,11 +66,21 @@ export default function Home() {
                             <p>Tone: {template.tone}</p>
 
                             <button
-                                onClick={() => navigate(`/generator/${template.id}`)}
-                                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
+                            
+                                disabled={!token}
+                                onClick={() => {
+                                    if (!token) {
+                                        alert("Please login to use this feature");
+                                        return;
+                                    }
+                                    navigate(`/generator/${template.id}`);
+                                }}
+                                className={`mt-3 px-4 py-2 rounded ${token ? "bg-blue-600 text-white" : "bg-gray-400 text-gray-700"
+                                    }`}
                             >
                                 Use Template
                             </button>
+
                         </div>
                     ))}
             </div>
