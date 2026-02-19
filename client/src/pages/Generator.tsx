@@ -103,10 +103,18 @@ export default function Generator() {
 
       <button
         onClick={async () => {
+          const token = localStorage.getItem("token");
+
+          if (!token) {
+            alert("Please login first!");
+            return;
+          }
+
           const response = await fetch("http://localhost:5000/api/letters", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
               title: template.title,
@@ -125,6 +133,7 @@ export default function Generator() {
       >
         Save Letter
       </button>
+
 
     </div>
   );
