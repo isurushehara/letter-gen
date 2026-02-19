@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+
+
 
 interface Template {
     id: string;
@@ -25,6 +28,7 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-gray-100 p-8">
+            <Navbar />
             <button
                 onClick={() => navigate("/letters")}
                 className="mb-4 bg-green-600 text-white px-4 py-2 rounded"

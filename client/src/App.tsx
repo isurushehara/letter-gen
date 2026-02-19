@@ -11,7 +11,6 @@ import Navbar from "./components/Navbar";
 function App() {
   return (
     <Routes>
-      <Navbar />
       <Route path="/" element={<Home />} />
       <Route path="/generator/:id" element={<Generator />} />
       <Route path="/letters" element={<Letters />} />
