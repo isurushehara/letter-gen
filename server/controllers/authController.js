@@ -101,3 +101,101 @@ exports.adminLogin = async (req, res) => {
     res.status(500).json({ error: "Admin login failed" });
   }
 };
+
+// GET ALL USERS (Admin only)
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+};
+
+// SEARCH USERS BY EMAIL (Admin only)
+exports.searchUsers = async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email query parameter required" });
+    }
+
+    const users = await prisma.user.findMany({
+      where: {
+        email: {
+          contains: email,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to search users" });
+  }
+};
+
+// UPDATE USER (Admin only)
+exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, role } = req.body;
+
+    const user = await prisma.user.update({
+      where: { id: parseInt(id) },
+      data: {
+        ...(name && { name }),
+        ...(email && { email }),
+        ...(role && { role }),
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update user" });
+  }
+};
+
+// DELETE USER (Admin only)
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.user.delete({
+      where: { id: parseInt(id) },
+    });
+
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+};
