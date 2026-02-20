@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
+    "check:persistence": "node scripts/enforce-db-persistence.js",
+    "check:all": "npm run check:persistence",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
