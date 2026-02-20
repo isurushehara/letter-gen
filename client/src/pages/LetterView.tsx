@@ -8,18 +8,36 @@ export default function LetterView() {
   const [content, setContent] = useState("");
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/letters/${id}`)
-      .then(res => res.json())
-      .then(data => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return;
+    }
+
+    fetch(`http://localhost:5000/api/letters/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
         setLetter(data);
         setContent(data.content);
       });
   }, [id]);
 
   const handleUpdate = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Please login first!");
+      return;
+    }
+
     await fetch(`http://localhost:5000/api/letters/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ content }),
     });
 

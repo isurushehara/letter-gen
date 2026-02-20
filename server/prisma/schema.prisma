@@ -30,7 +30,10 @@ model Letter {
   content   String
   language  String
   userId    String
+  templateId String?
+  inputValues Json?
   user      User     @relation(fields: [userId], references: [id])
+  template  Template? @relation(fields: [templateId], references: [id])
   createdAt DateTime @default(now())
 }
 
@@ -45,6 +48,7 @@ model Template {
   isGlobal  Boolean  @default(true)
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
+  letters   Letter[]
   createdAt DateTime @default(now())
 }
 

@@ -17,6 +17,7 @@ exports.createTemplate = async (req, res) => {
         audience,
         language,
         content,
+        userId: req.user.id,
       },
     });
 

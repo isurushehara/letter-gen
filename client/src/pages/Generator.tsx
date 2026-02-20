@@ -151,6 +151,8 @@ export default function Generator() {
               title: template.title,
               content: generatedLetter,
               language: template.language,
+              templateId: template.id,
+              inputValues: formData,
             }),
           });
 
