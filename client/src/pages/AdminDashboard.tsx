@@ -511,6 +511,10 @@ export default function AdminDashboard() {
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Template Content
                       </label>
+                      <p className="text-xs text-gray-500 mb-2">
+                        Use placeholders like [Your Name], [Date], [Company Name].
+                        Users will get matching input fields automatically.
+                      </p>
                       <textarea
                         value={form.content}
                         placeholder="Enter template content..."
@@ -765,6 +769,10 @@ export default function AdminDashboard() {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Content
                 </label>
+                <p className="text-xs text-gray-500 mb-2">
+                  Keep placeholders in square brackets, for example [Your Address]
+                  or [Company/Manager Name].
+                </p>
                 <textarea
                   value={editingTemplate.content}
                   rows={10}
