@@ -12,7 +12,7 @@ interface User {
 }
 
 interface Template {
-  id: number;
+  id: string;
   title: string;
   category: string;
   tone: string;
@@ -28,6 +28,7 @@ export default function AdminDashboard() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [searchEmail, setSearchEmail] = useState("");
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
   const [form, setForm] = useState({
     title: "",
     category: "",
@@ -160,7 +161,7 @@ export default function AdminDashboard() {
     alert(data.error || "Failed to create template");
   };
 
-  const handleDeleteTemplate = async (id: number) => {
+  const handleDeleteTemplate = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this template?")) return;
 
     const res = await fetch(`http://localhost:5000/api/templates/${id}`, {
@@ -173,6 +174,38 @@ export default function AdminDashboard() {
       fetchTemplates();
     } else {
       alert("Failed to delete template");
+    }
+  };
+
+  const handleUpdateTemplate = async () => {
+    if (!editingTemplate) return;
+
+    const res = await fetch(
+      `http://localhost:5000/api/templates/${editingTemplate.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: editingTemplate.title,
+          category: editingTemplate.category,
+          tone: editingTemplate.tone,
+          audience: editingTemplate.audience,
+          language: editingTemplate.language,
+          content: editingTemplate.content,
+        }),
+      }
+    );
+
+    if (res.ok) {
+      alert("Template updated successfully");
+      setEditingTemplate(null);
+      fetchTemplates();
+    } else {
+      const data = await res.json();
+      alert(data.error || "Failed to update template");
     }
   };
 
@@ -541,12 +574,20 @@ export default function AdminDashboard() {
                             )}
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleDeleteTemplate(template.id)}
-                          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors font-medium"
-                        >
-                          Delete
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setEditingTemplate(template)}
+                            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteTemplate(template.id)}
+                            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors font-medium"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
 
                       <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -633,6 +674,116 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   onClick={() => setEditingUser(null)}
+                  className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editingTemplate && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-8 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Edit Template
+            </h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Title
+                </label>
+                <input
+                  value={editingTemplate.title}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                  onChange={(e) =>
+                    setEditingTemplate({ ...editingTemplate, title: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Category
+                  </label>
+                  <input
+                    value={editingTemplate.category}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    onChange={(e) =>
+                      setEditingTemplate({ ...editingTemplate, category: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Tone
+                  </label>
+                  <input
+                    value={editingTemplate.tone}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    onChange={(e) =>
+                      setEditingTemplate({ ...editingTemplate, tone: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Audience
+                  </label>
+                  <input
+                    value={editingTemplate.audience}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    onChange={(e) =>
+                      setEditingTemplate({ ...editingTemplate, audience: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Language
+                  </label>
+                  <input
+                    value={editingTemplate.language}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    onChange={(e) =>
+                      setEditingTemplate({ ...editingTemplate, language: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Content
+                </label>
+                <textarea
+                  value={editingTemplate.content}
+                  rows={10}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors resize-none"
+                  onChange={(e) =>
+                    setEditingTemplate({ ...editingTemplate, content: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={handleUpdateTemplate}
+                  className="flex-1 bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-semibold"
+                >
+                  Save Changes
+                </button>
+                <button
+                  onClick={() => setEditingTemplate(null)}
                   className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
                 >
                   Cancel

@@ -45,13 +45,22 @@ exports.deleteTemplate = async (req, res) => {
   try {
     const { id } = req.params;
 
+    if (!id) {
+      return res.status(400).json({ error: "Template id is required" });
+    }
+
     await prisma.template.delete({
-      where: { id: parseInt(id) },
+      where: { id },
     });
 
     res.json({ message: "Template deleted successfully" });
   } catch (error) {
     console.error(error);
+
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Template not found" });
+    }
+
     res.status(500).json({ error: "Failed to delete template" });
   }
 };
@@ -62,8 +71,12 @@ exports.updateTemplate = async (req, res) => {
     const { id } = req.params;
     const { title, category, tone, audience, language, content } = req.body;
 
+    if (!id) {
+      return res.status(400).json({ error: "Template id is required" });
+    }
+
     const template = await prisma.template.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: {
         ...(title && { title }),
         ...(category && { category }),
@@ -77,6 +90,11 @@ exports.updateTemplate = async (req, res) => {
     res.json(template);
   } catch (error) {
     console.error(error);
+
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Template not found" });
+    }
+
     res.status(500).json({ error: "Failed to update template" });
   }
 };
