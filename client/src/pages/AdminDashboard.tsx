@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 type MenuTab = "users" | "create-template" | "templates";
 
 interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: string;
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDeleteUser = async (id: number) => {
+  const handleDeleteUser = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     const res = await fetch(`http://localhost:5000/api/auth/users/${id}`, {

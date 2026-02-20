@@ -161,8 +161,12 @@ exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const { name, email, role } = req.body;
 
+    if (!id) {
+      return res.status(400).json({ error: "User id is required" });
+    }
+
     const user = await prisma.user.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: {
         ...(name && { name }),
         ...(email && { email }),
@@ -180,6 +184,14 @@ exports.updateUser = async (req, res) => {
     res.json(user);
   } catch (error) {
     console.error(error);
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (error.code === "P2002") {
+      return res.status(409).json({ error: "Email already in use" });
+    }
+
     res.status(500).json({ error: "Failed to update user" });
   }
 };
@@ -189,13 +201,22 @@ exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
+    if (!id) {
+      return res.status(400).json({ error: "User id is required" });
+    }
+
     await prisma.user.delete({
-      where: { id: parseInt(id) },
+      where: { id },
     });
 
     res.json({ message: "User deleted successfully" });
   } catch (error) {
     console.error(error);
+
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "User not found" });
+    }
+
     res.status(500).json({ error: "Failed to delete user" });
   }
 };
