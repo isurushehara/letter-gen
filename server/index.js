@@ -4,6 +4,7 @@ const cors = require("cors");
 
 // 2️⃣ Import local modules
 const prisma = require("./prismaClient");
+const authRoutes = require("./routes/authRoutes");
 const templateRoutes = require("./routes/templateRoutes");
 const letterRoutes = require("./routes/letterRoutes");
 
@@ -26,6 +27,7 @@ app.get("/test-db", async (req, res) => {
 });
 
 // 7️⃣ API routes
+app.use("/api/auth", authRoutes);
 app.use("/api/templates", templateRoutes);
 app.use("/api/letters", letterRoutes);
 

@@ -2,28 +2,72 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RichEditor from "../components/RichEditor";
 
+interface Template {
+  id: string;
+  title: string;
+  language: string;
+  content: string;
+}
+
+const extractBracketPlaceholders = (content: string) => {
+  const matches = Array.from(content.matchAll(/\[([^\[\]\n]+)\]/g), (match) =>
+    match[1].trim()
+  ).filter(Boolean);
+
+  return matches.filter((item, index) => matches.indexOf(item) === index);
+};
+
+const escapeRegExp = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const getInputType = (label: string) => {
+  const normalized = label.toLowerCase();
+
+  if (normalized.includes("email")) return "email";
+  if (normalized.includes("date")) return "date";
+  if (
+    normalized.includes("phone") ||
+    normalized.includes("mobile") ||
+    normalized.includes("tel")
+  ) {
+    return "tel";
+  }
+
+  return "text";
+};
+
 export default function Generator() {
   const { id } = useParams();
-  const [template, setTemplate] = useState<any>(null);
-
-  const [formData, setFormData] = useState({
-    sender_name: "",
-    receiver_name: "",
-    start_date: "",
-    end_date: "",
-  });
+  const [template, setTemplate] = useState<Template | null>(null);
+  const [placeholders, setPlaceholders] = useState<string[]>([]);
+  const [formData, setFormData] = useState<Record<string, string>>({});
 
   const [generatedLetter, setGeneratedLetter] = useState("");
 
   // Fetch template
   useEffect(() => {
     fetch("http://localhost:5000/api/templates")
-      .then(res => res.json())
-      .then(data => {
-        const found = data.find((t: any) => t.id === id);
+      .then((res) => res.json())
+      .then((data) => {
+        const found = data.find((t: Template) => t.id === id);
         setTemplate(found);
       });
   }, [id]);
+
+  useEffect(() => {
+    if (!template) return;
+
+    const detectedPlaceholders = extractBracketPlaceholders(template.content);
+    setPlaceholders(detectedPlaceholders);
+
+    setFormData((prev) => {
+      const next: Record<string, string> = {};
+      detectedPlaceholders.forEach((placeholder) => {
+        next[placeholder] = prev[placeholder] || "";
+      });
+      return next;
+    });
+  }, [template]);
 
   // Replace placeholders dynamically
   useEffect(() => {
@@ -31,10 +75,10 @@ export default function Generator() {
 
     let content = template.content;
 
-    Object.keys(formData).forEach((key) => {
-      const value = formData[key as keyof typeof formData];
-      const regex = new RegExp(`{{${key}}}`, "g");
-      content = content.replace(regex, value);
+    placeholders.forEach((placeholder) => {
+      const value = formData[placeholder]?.trim();
+      const regex = new RegExp(`\\[${escapeRegExp(placeholder)}\\]`, "g");
+      content = content.replace(regex, value || `[${placeholder}]`);
     });
 
     // Convert line breaks to HTML
@@ -43,7 +87,7 @@ export default function Generator() {
       .replace(/\n/g, "<br />");
 
     setGeneratedLetter(`<p>${formattedContent}</p>`);
-  }, [formData, template]);
+  }, [formData, placeholders, template]);
 
   if (!template) return <p className="p-8">Loading...</p>;
 
@@ -54,41 +98,28 @@ export default function Generator() {
       <div>
         <h2 className="text-xl font-bold mb-4">Fill Details</h2>
 
-        <input
-          type="text"
-          placeholder="Sender Name"
-          className="mb-3 p-2 border rounded w-full"
-          onChange={(e) =>
-            setFormData({ ...formData, sender_name: e.target.value })
-          }
-        />
+        {placeholders.length === 0 && (
+          <p className="text-sm text-gray-600 bg-white rounded border p-3">
+            This template has no dynamic input fields.
+          </p>
+        )}
 
-        <input
-          type="text"
-          placeholder="Receiver Name"
-          className="mb-3 p-2 border rounded w-full"
-          onChange={(e) =>
-            setFormData({ ...formData, receiver_name: e.target.value })
-          }
-        />
-
-        <input
-          type="text"
-          placeholder="Start Date"
-          className="mb-3 p-2 border rounded w-full"
-          onChange={(e) =>
-            setFormData({ ...formData, start_date: e.target.value })
-          }
-        />
-
-        <input
-          type="text"
-          placeholder="End Date"
-          className="mb-3 p-2 border rounded w-full"
-          onChange={(e) =>
-            setFormData({ ...formData, end_date: e.target.value })
-          }
-        />
+        {placeholders.map((placeholder) => (
+          <div key={placeholder} className="mb-3">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {placeholder}
+            </label>
+            <input
+              type={getInputType(placeholder)}
+              placeholder={placeholder}
+              value={formData[placeholder] || ""}
+              className="p-2 border rounded w-full"
+              onChange={(e) =>
+                setFormData({ ...formData, [placeholder]: e.target.value })
+              }
+            />
+          </div>
+        ))}
       </div>
 
       {/* RIGHT SIDE - LIVE PREVIEW */}
@@ -103,15 +134,25 @@ export default function Generator() {
 
       <button
         onClick={async () => {
+          const token = localStorage.getItem("token");
+
+          if (!token) {
+            alert("Please login first!");
+            return;
+          }
+
           const response = await fetch("http://localhost:5000/api/letters", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
               title: template.title,
               content: generatedLetter,
               language: template.language,
+              templateId: template.id,
+              inputValues: formData,
             }),
           });
 
@@ -125,6 +166,7 @@ export default function Generator() {
       >
         Save Letter
       </button>
+
 
     </div>
   );

@@ -25,7 +25,7 @@ export default function RichEditor({ content, onChange }: Props) {
   if (!editor) return null;
 
   return (
-    <div className="bg-white p-4 rounded shadow">
+    <div className="bg-white p-4 rounded shadow letter-editor-wrapper">
       
       {/* Toolbar */}
       <div className="mb-4 space-x-2">
@@ -52,7 +52,7 @@ export default function RichEditor({ content, onChange }: Props) {
       </div>
 
       {/* Editor Area */}
-      <div className="border p-4 min-h-[400px] bg-white">
+      <div className="border p-4 min-h-[400px] bg-white letter-editor-content">
         <EditorContent editor={editor} />
       </div>
     </div>
