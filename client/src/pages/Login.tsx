@@ -25,7 +25,7 @@ export default function Login() {
       alert("Login successful!");
       navigate("/");
     } else {
-      alert(data.error);
+      alert(data.error || "Login failed");
     }
   };
 
