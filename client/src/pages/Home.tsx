@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
@@ -26,6 +26,13 @@ export default function Home() {
             .then((res) => res.json())
             .then((data) => setTemplates(data));
     }, []);
+
+    // Derive unique sorted categories from whatever templates exist
+    const categories = useMemo(() => {
+        return Array.from(
+            new Set(templates.map((t) => t.category?.trim()).filter(Boolean))
+        ).sort((a, b) => a.localeCompare(b));
+    }, [templates]);
 
     // Reset to first page whenever filters change
     useEffect(() => {
@@ -74,9 +81,9 @@ export default function Home() {
                         onChange={(e) => setCategoryFilter(e.target.value)}
                     >
                         <option value="">All Categories</option>
-                        <option value="Formal">Formal</option>
-                        <option value="Business">Business</option>
-                        <option value="Academic">Academic</option>
+                        {categories.map((cat) => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
                     </select>
                 </div>
 

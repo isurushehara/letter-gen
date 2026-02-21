@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import Profile from "./pages/Profile";
 import { useAuth } from "./context/AuthContext";
 
 function AdminRoute({ children }: { children: ReactElement }): ReactElement {
@@ -30,6 +31,7 @@ function App() {
       <Route path="/letter/:id" element={<LetterView />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/profile" element={<Profile />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route
         path="/admin"

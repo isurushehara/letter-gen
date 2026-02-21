@@ -34,6 +34,11 @@ exports.getLetters = async (req, res) => {
     const letters = await prisma.letter.findMany({
       where: { userId: req.user.id },
       orderBy: { createdAt: "desc" },
+      include: {
+        template: {
+          select: { category: true, title: true },
+        },
+      },
     });
 
     res.json(letters);

@@ -26,12 +26,16 @@ export default function Navbar() {
     <div className="flex justify-between p-4 bg-gray-800 text-white">
       <Link to="/">LetterGen</Link>
 
-      <div className="space-x-4">
+      <div className="space-x-4 flex items-center">
         {showUserLinks && (
           <>
             <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
           </>
+        )}
+
+        {!isAdminContext && isLoggedIn && (
+          <Link to="/profile" className="hover:text-blue-300 transition-colors">Profile</Link>
         )}
 
         {showLogout && (
