@@ -12,7 +12,7 @@ export default function Letters() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("userToken");
 
     if (!token) {
       return;

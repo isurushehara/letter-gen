@@ -11,14 +11,10 @@ import AdminDashboard from "./pages/AdminDashboard";
 import { useAuth } from "./context/AuthContext";
 
 function AdminRoute({ children }: { children: ReactElement }): ReactElement {
-  const { token, role } = useAuth();
+  const { adminToken } = useAuth();
 
-  if (!token) {
+  if (!adminToken) {
     return <Navigate to="/admin/login" replace />;
-  }
-
-  if (role !== "ADMIN") {
-    return <Navigate to="/" replace />;
   }
 
   return children;

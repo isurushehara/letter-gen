@@ -1,31 +1,41 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
-  const { token, logout } = useAuth();
+  const { isLoggedIn, isAdminLoggedIn, logoutUser, logoutAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine context: admin pages vs user pages
+  const isAdminContext = location.pathname.startsWith("/admin");
 
   const handleLogout = () => {
-    logout();
+    if (isAdminContext) {
+      logoutAdmin();
+    } else {
+      logoutUser();
+    }
     navigate("/");
   };
+
+  // Show logout only for the relevant session in the current context
+  const showLogout = isAdminContext ? isAdminLoggedIn : isLoggedIn;
+  const showUserLinks = !isAdminContext && !isLoggedIn;
 
   return (
     <div className="flex justify-between p-4 bg-gray-800 text-white">
       <Link to="/">LetterGen</Link>
 
       <div className="space-x-4">
-        {!token && (
+        {showUserLinks && (
           <>
             <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
           </>
         )}
 
-        {token && (
-          <>
-            <button onClick={handleLogout}>Logout</button>
-          </>
+        {showLogout && (
+          <button onClick={handleLogout}>Logout</button>
         )}
       </div>
     </div>

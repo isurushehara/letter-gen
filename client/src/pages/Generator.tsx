@@ -134,7 +134,7 @@ export default function Generator() {
 
       <button
         onClick={async () => {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("userToken");
 
           if (!token) {
             alert("Please login first!");

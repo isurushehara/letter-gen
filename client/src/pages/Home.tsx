@@ -19,7 +19,7 @@ export default function Home() {
     const [categoryFilter, setCategoryFilter] = useState("");
     const [page, setPage] = useState(1);
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("userToken");
 
     useEffect(() => {
         fetch("http://localhost:5000/api/templates")

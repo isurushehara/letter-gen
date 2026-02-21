@@ -54,7 +54,7 @@ export default function LetterView() {
   const [content, setContent] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("userToken");
 
     if (!token) {
       return;
@@ -120,7 +120,7 @@ export default function LetterView() {
   }, [formData, placeholders, template]);
 
   const handleUpdate = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("userToken");
 
     if (!token) {
       alert("Please login first!");
