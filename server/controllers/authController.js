@@ -53,6 +53,12 @@ exports.login = async (req, res) => {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
+    if (user.role === "ADMIN") {
+      return res.status(403).json({
+        error: "Admin accounts must use the admin login page",
+      });
+    }
+
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       JWT_SECRET,

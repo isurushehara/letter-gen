@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Navbar from "../components/Navbar";
 
 type MenuTab = "users" | "create-template" | "templates";
@@ -27,6 +27,11 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [searchEmail, setSearchEmail] = useState("");
+  const [templateSearch, setTemplateSearch] = useState("");
+  const [templateCategory, setTemplateCategory] = useState("all");
+  const [templateSort, setTemplateSort] = useState<"newest" | "oldest">(
+    "newest"
+  );
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
   const [form, setForm] = useState({
@@ -208,6 +213,36 @@ export default function AdminDashboard() {
       alert(data.error || "Failed to update template");
     }
   };
+
+  const templateCategories = useMemo(() => {
+    const categories = templates
+      .map((template) => template.category?.trim())
+      .filter(Boolean) as string[];
+
+    return Array.from(new Set(categories)).sort((a, b) =>
+      a.localeCompare(b)
+    );
+  }, [templates]);
+
+  const filteredTemplates = useMemo(() => {
+    const query = templateSearch.trim().toLowerCase();
+
+    return [...templates]
+      .filter((template) => {
+        const matchesSearch =
+          !query || template.title.toLowerCase().includes(query);
+        const matchesCategory =
+          templateCategory === "all" || template.category === templateCategory;
+
+        return matchesSearch && matchesCategory;
+      })
+      .sort((a, b) => {
+        const first = new Date(a.createdAt).getTime();
+        const second = new Date(b.createdAt).getTime();
+
+        return templateSort === "newest" ? second - first : first - second;
+      });
+  }, [templateCategory, templateSearch, templateSort, templates]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -544,38 +579,81 @@ export default function AdminDashboard() {
                   All Templates
                 </h1>
 
+                <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Search by Letter Name
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Type template name"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                        value={templateSearch}
+                        onChange={(e) => setTemplateSearch(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Category
+                      </label>
+                      <select
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                        value={templateCategory}
+                        onChange={(e) => setTemplateCategory(e.target.value)}
+                      >
+                        <option value="all">All Categories</option>
+                        {templateCategories.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Sort by Date
+                      </label>
+                      <select
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                        value={templateSort}
+                        onChange={(e) =>
+                          setTemplateSort(e.target.value as "newest" | "oldest")
+                        }
+                      >
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid gap-6">
-                  {templates.map((template) => (
+                  {filteredTemplates.map((template) => (
                     <div
                       key={template.id}
                       className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
                     >
-                      <div className="flex justify-between items-start mb-4">
+                      <div className="flex justify-between items-start gap-4">
                         <div>
                           <h3 className="text-xl font-bold text-gray-800 mb-2">
                             {template.title}
                           </h3>
-                          <div className="flex flex-wrap gap-2">
-                            {template.category && (
-                              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
-                                {template.category}
-                              </span>
-                            )}
-                            {template.tone && (
-                              <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
-                                {template.tone}
-                              </span>
-                            )}
-                            {template.audience && (
-                              <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">
-                                {template.audience}
-                              </span>
-                            )}
-                            {template.language && (
-                              <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-semibold">
-                                {template.language}
-                              </span>
-                            )}
+                          <div className="space-y-1 text-sm text-gray-600">
+                            <p>
+                              <span className="font-semibold text-gray-700">
+                                Category:
+                              </span>{" "}
+                              {template.category || "Uncategorized"}
+                            </p>
+                            <p>
+                              <span className="font-semibold text-gray-700">
+                                Date:
+                              </span>{" "}
+                              {new Date(template.createdAt).toLocaleDateString()}
+                            </p>
                           </div>
                         </div>
                         <div className="flex gap-2">
@@ -593,22 +671,12 @@ export default function AdminDashboard() {
                           </button>
                         </div>
                       </div>
-
-                      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <p className="text-gray-700 text-sm whitespace-pre-wrap">
-                          {template.content}
-                        </p>
-                      </div>
-
-                      <div className="mt-4 text-xs text-gray-500">
-                        Created: {new Date(template.createdAt).toLocaleDateString()}
-                      </div>
                     </div>
                   ))}
 
-                  {templates.length === 0 && (
+                  {filteredTemplates.length === 0 && (
                     <div className="bg-white rounded-xl shadow-md p-12 text-center text-gray-500">
-                      No templates found. Create your first template!
+                      No templates found for current filters.
                     </div>
                   )}
                 </div>
