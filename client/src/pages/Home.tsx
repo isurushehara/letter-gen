@@ -54,16 +54,8 @@ export default function Home() {
 
             <div className="max-w-7xl mx-auto px-6 py-8">
                 {/* Header row */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="mb-6">
                     <h1 className="text-3xl font-bold">Letter Templates</h1>
-                    {token && (
-                        <button
-                            onClick={() => navigate("/letters")}
-                            className="bg-green-600 text-white px-4 py-2 rounded"
-                        >
-                            View Saved Letters
-                        </button>
-                    )}
                 </div>
 
                 {/* Filters */}

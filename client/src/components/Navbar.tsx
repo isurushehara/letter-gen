@@ -35,7 +35,10 @@ export default function Navbar() {
         )}
 
         {!isAdminContext && isLoggedIn && (
-          <Link to="/profile" className="hover:text-blue-300 transition-colors">Profile</Link>
+          <>
+            <Link to="/letters" className="hover:text-blue-300 transition-colors">My Letters</Link>
+            <Link to="/profile" className="hover:text-blue-300 transition-colors">Profile</Link>
+          </>
         )}
 
         {showLogout && (
