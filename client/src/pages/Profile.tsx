@@ -143,6 +143,13 @@ export default function ProfilePage() {
       <Navbar />
 
       <div className="max-w-2xl mx-auto px-4 py-10">
+        <button
+          onClick={() => navigate('/')}
+          className="mb-6 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center gap-2"
+        >
+          <span>←</span> Back to Home
+        </button>
+        
         {/* Header Card */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-6 flex items-center gap-6">
           {/* Avatar */}
