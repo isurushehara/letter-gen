@@ -90,6 +90,14 @@ export default function Generator() {
     setGeneratedLetter(`<p>${formattedContent}</p>`);
   }, [formData, placeholders, template]);
 
+  const handleReset = () => {
+    const emptyForm: Record<string, string> = {};
+    placeholders.forEach((placeholder) => {
+      emptyForm[placeholder] = "";
+    });
+    setFormData(emptyForm);
+  };
+
   if (!template) return <p className="p-8">Loading...</p>;
 
   return (
@@ -104,7 +112,17 @@ export default function Generator() {
       <div className="grid md:grid-cols-2 gap-8">
         {/* LEFT SIDE - FORM */}
         <div>
-          <h2 className="text-xl font-bold mb-4">Fill Details</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold">Fill Details</h2>
+            {placeholders.length > 0 && (
+              <button
+                onClick={handleReset}
+                className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
+              >
+                Reset
+              </button>
+            )}
+          </div>
 
         {placeholders.length === 0 && (
           <p className="text-sm text-gray-600 bg-white rounded border p-3">
