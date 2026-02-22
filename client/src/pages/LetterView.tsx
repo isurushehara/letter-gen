@@ -140,6 +140,37 @@ export default function LetterView() {
     alert("Letter updated successfully!");
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this letter? This action cannot be undone.")) {
+      return;
+    }
+
+    const token = localStorage.getItem("userToken");
+
+    if (!token) {
+      alert("Please login first!");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/letters/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        alert("Letter deleted successfully!");
+        navigate("/letters");
+      } else {
+        alert("Failed to delete letter");
+      }
+    } catch (error) {
+      alert("Error deleting letter");
+    }
+  };
+
   if (!letter) return <p className="p-8">Loading...</p>;
 
   return (
@@ -248,6 +279,13 @@ export default function LetterView() {
           className="mt-4 ml-4 bg-green-600 text-white px-4 py-2 rounded"
         >
           Download PDF
+        </button>
+
+        <button
+          onClick={handleDelete}
+          className="mt-4 ml-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          Delete Letter
         </button>
       </div>
       </div>
