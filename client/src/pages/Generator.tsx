@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RichEditor from "../components/RichEditor";
 
@@ -38,6 +38,7 @@ const getInputType = (label: string) => {
 
 export default function Generator() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [template, setTemplate] = useState<Template | null>(null);
   const [placeholders, setPlaceholders] = useState<string[]>([]);
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -92,11 +93,18 @@ export default function Generator() {
   if (!template) return <p className="p-8">Loading...</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8 grid md:grid-cols-2 gap-8">
-
-      {/* LEFT SIDE - FORM */}
-      <div>
-        <h2 className="text-xl font-bold mb-4">Fill Details</h2>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <button
+        onClick={() => navigate('/')}
+        className="mb-6 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center gap-2"
+      >
+        <span>←</span> Back to Home
+      </button>
+      
+      <div className="grid md:grid-cols-2 gap-8">
+        {/* LEFT SIDE - FORM */}
+        <div>
+          <h2 className="text-xl font-bold mb-4">Fill Details</h2>
 
         {placeholders.length === 0 && (
           <p className="text-sm text-gray-600 bg-white rounded border p-3">
@@ -166,8 +174,7 @@ export default function Generator() {
       >
         Save Letter
       </button>
-
-
+      </div>
     </div>
   );
 }

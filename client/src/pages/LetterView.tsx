@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RichEditor from "../components/RichEditor";
 
@@ -47,6 +47,7 @@ const getInputType = (label: string) => {
 
 export default function LetterView() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [letter, setLetter] = useState<Letter | null>(null);
   const [template, setTemplate] = useState<Template | null>(null);
   const [placeholders, setPlaceholders] = useState<string[]>([]);
@@ -142,9 +143,17 @@ export default function LetterView() {
   if (!letter) return <p className="p-8">Loading...</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8 grid md:grid-cols-2 gap-8">
-      <div>
-        <h1 className="text-2xl font-bold mb-4">{letter.title}</h1>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <button
+        onClick={() => navigate('/letters')}
+        className="mb-6 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center gap-2"
+      >
+        <span>←</span> Back to Letters
+      </button>
+      
+      <div className="grid md:grid-cols-2 gap-8">
+        <div>
+          <h1 className="text-2xl font-bold mb-4">{letter.title}</h1>
 
         {template && placeholders.length > 0 ? (
           <>
@@ -240,6 +249,7 @@ export default function LetterView() {
         >
           Download PDF
         </button>
+      </div>
       </div>
     </div>
   );
