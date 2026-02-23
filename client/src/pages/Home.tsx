@@ -10,6 +10,8 @@ interface Template {
     category: string;
     tone: string;
     audience: string;
+    language?: string;
+    content?: string;
 }
 
 export default function Home() {
@@ -18,6 +20,7 @@ export default function Home() {
     const [search, setSearch] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
     const [page, setPage] = useState(1);
+    const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
 
     const token = localStorage.getItem("userToken");
 
@@ -47,6 +50,18 @@ export default function Home() {
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
     const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+    const handleTemplateClick = async (template: Template) => {
+        if (token) {
+            navigate(`/generator/${template.id}`);
+        } else {
+            // Fetch full template details for preview
+            const res = await fetch(`http://localhost:5000/api/templates`);
+            const allTemplates = await res.json();
+            const fullTemplate = allTemplates.find((t: Template) => t.id === template.id);
+            setPreviewTemplate(fullTemplate || template);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -203,21 +218,14 @@ export default function Home() {
                                 </div>
 
                                 <button
-                                    disabled={!token}
-                                    onClick={() => {
-                                        if (!token) {
-                                            alert("Please login to use this feature");
-                                            return;
-                                        }
-                                        navigate(`/generator/${template.id}`);
-                                    }}
+                                    onClick={() => handleTemplateClick(template)}
                                     className={`mt-5 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                                         token
                                             ? "bg-blue-600 text-white hover:bg-blue-700 transform hover:scale-105"
-                                            : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                            : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300"
                                     }`}
                                 >
-                                    {token ? "Use Template" : "Login to Use"}
+                                    {token ? "Use Template" : "Preview Template"}
                                 </button>
                             </div>
                         ))}
@@ -259,6 +267,98 @@ export default function Home() {
                     </div>
                 )}
             </div>
+
+            {/* Template Preview Panel - Right Side (for guest users) */}
+            {previewTemplate && (
+                <>
+                    {/* Backdrop overlay */}
+                    <div 
+                        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
+                        onClick={() => setPreviewTemplate(null)}
+                    />
+                    
+                    {/* Preview Panel */}
+                    <div className="fixed top-0 right-0 h-full w-full md:w-2/3 lg:w-1/2 bg-white shadow-2xl z-50 overflow-y-auto">
+                        {/* Header */}
+                        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 shadow-lg z-10">
+                            <div className="flex items-start justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-bold mb-2">{previewTemplate.title}</h2>
+                                    <div className="flex flex-wrap gap-2">
+                                        <span className="bg-white bg-opacity-20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium">
+                                            {previewTemplate.category}
+                                        </span>
+                                        <span className="bg-white bg-opacity-20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium">
+                                            {previewTemplate.tone}
+                                        </span>
+                                        {previewTemplate.language && (
+                                            <span className="bg-white bg-opacity-20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium">
+                                                {previewTemplate.language.toUpperCase()}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setPreviewTemplate(null)}
+                                    className="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6">
+                            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
+                                <div className="flex items-start">
+                                    <svg className="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <p className="text-sm text-blue-700">
+                                        This is a preview only. <strong>Sign in or create an account</strong> to customize and save this template.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Template Preview
+                                </h3>
+                                <div className="bg-white p-6 rounded border border-gray-300 whitespace-pre-wrap text-gray-800 leading-relaxed">
+                                    {previewTemplate.content || "No content available for this template."}
+                                </div>
+                            </div>
+
+                            {/* Call to Action */}
+                            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                                <button
+                                    onClick={() => navigate('/register')}
+                                    className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-800 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                    </svg>
+                                    Sign Up to Use Template
+                                </button>
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className="flex-1 bg-white border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                    </svg>
+                                    Sign In
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 }
