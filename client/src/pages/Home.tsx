@@ -63,6 +63,14 @@ export default function Home() {
         }
     };
 
+    const handlePreviewClick = async (template: Template) => {
+        // Fetch full template details for preview
+        const res = await fetch(`http://localhost:5000/api/templates`);
+        const allTemplates = await res.json();
+        const fullTemplate = allTemplates.find((t: Template) => t.id === template.id);
+        setPreviewTemplate(fullTemplate || template);
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
             <Navbar />
@@ -191,42 +199,56 @@ export default function Home() {
                         <p className="text-gray-400 text-sm mt-2">Try adjusting your search or filters</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                         {paginated.map((template) => (
                             <div
                                 key={template.id}
-                                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between border border-gray-100 hover:border-blue-200"
+                                className="group bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col border border-gray-200 hover:border-blue-400 transform hover:-translate-y-1"
                             >
-                                <div>
-                                    <div className="flex items-start justify-between mb-3">
-                                        <h3 className="text-lg font-semibold text-gray-800 leading-tight">{template.title}</h3>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center text-sm text-gray-600">
-                                            <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                            </svg>
-                                            {template.category}
-                                        </div>
-                                        <div className="flex items-center text-sm text-gray-600">
-                                            <svg className="w-4 h-4 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                                            </svg>
-                                            {template.tone}
-                                        </div>
-                                    </div>
-                                </div>
+                                {/* Card Header with Gradient */}
+                                <div className="h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+                                
+                                <div className="p-4 flex flex-col gap-3">
+                                    {/* Title */}
+                                    <h3 className="text-base font-bold text-gray-900 leading-snug line-clamp-2">
+                                        {template.title}
+                                    </h3>
 
-                                <button
-                                    onClick={() => handleTemplateClick(template)}
-                                    className={`mt-5 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                        token
-                                            ? "bg-blue-600 text-white hover:bg-blue-700 transform hover:scale-105"
-                                            : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300"
-                                    }`}
-                                >
-                                    {token ? "Use Template" : "Preview Template"}
-                                </button>
+                                    {/* Tags */}
+                                    <div className="flex flex-wrap gap-1.5">
+                                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                                            {template.category}
+                                        </span>
+                                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">
+                                            {template.tone}
+                                        </span>
+                                    </div>
+
+                                    {/* Buttons */}
+                                    {token ? (
+                                        <div className="flex gap-2 mt-1">
+                                            <button
+                                                onClick={() => handlePreviewClick(template)}
+                                                className="flex-1 px-3 py-2 rounded-md text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                            >
+                                                Preview
+                                            </button>
+                                            <button
+                                                onClick={() => handleTemplateClick(template)}
+                                                className="flex-1 px-3 py-2 rounded-md text-xs font-semibold transition-all bg-blue-600 text-white hover:bg-blue-700"
+                                            >
+                                                Use
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleTemplateClick(template)}
+                                            className="px-3 py-2 rounded-md text-xs font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 w-full mt-1"
+                                        >
+                                            Preview
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -311,16 +333,18 @@ export default function Home() {
 
                         {/* Content */}
                         <div className="p-6">
-                            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
-                                <div className="flex items-start">
-                                    <svg className="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <p className="text-sm text-blue-700">
-                                        This is a preview only. <strong>Sign in or create an account</strong> to customize and save this template.
-                                    </p>
+                            {!token && (
+                                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
+                                    <div className="flex items-start">
+                                        <svg className="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <p className="text-sm text-blue-700">
+                                            This is a preview only. <strong>Sign in or create an account</strong> to customize and save this template.
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -336,24 +360,41 @@ export default function Home() {
 
                             {/* Call to Action */}
                             <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                                <button
-                                    onClick={() => navigate('/register')}
-                                    className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-800 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                                    </svg>
-                                    Sign Up to Use Template
-                                </button>
-                                <button
-                                    onClick={() => navigate('/login')}
-                                    className="flex-1 bg-white border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                                    </svg>
-                                    Sign In
-                                </button>
+                                {token ? (
+                                    <button
+                                        onClick={() => {
+                                            navigate(`/generator/${previewTemplate.id}`);
+                                            setPreviewTemplate(null);
+                                        }}
+                                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-800 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                        Use This Template
+                                    </button>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={() => navigate('/register')}
+                                            className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-800 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                            </svg>
+                                            Sign Up to Use Template
+                                        </button>
+                                        <button
+                                            onClick={() => navigate('/login')}
+                                            className="flex-1 bg-white border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                            </svg>
+                                            Sign In
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
