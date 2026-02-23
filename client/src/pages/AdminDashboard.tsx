@@ -386,9 +386,6 @@ export default function AdminDashboard() {
                       <thead className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
                         <tr>
                           <th className="px-6 py-4 text-left text-sm font-semibold">
-                            ID
-                          </th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">
                             Name
                           </th>
                           <th className="px-6 py-4 text-left text-sm font-semibold">
@@ -408,9 +405,6 @@ export default function AdminDashboard() {
                             key={user.id}
                             className="hover:bg-gray-50 transition-colors"
                           >
-                            <td className="px-6 py-4 text-sm text-gray-900">
-                              {user.id}
-                            </td>
                             <td className="px-6 py-4 text-sm text-gray-900">
                               {user.name}
                             </td>
