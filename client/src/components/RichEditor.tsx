@@ -25,34 +25,51 @@ export default function RichEditor({ content, onChange }: Props) {
   if (!editor) return null;
 
   return (
-    <div className="bg-white p-4 rounded shadow letter-editor-wrapper">
+    <div className="letter-editor-wrapper">
       
-      {/* Toolbar */}
-      <div className="mb-4 space-x-2">
+      {/* Toolbar - Modern Bar Design */}
+      <div className="flex items-center justify-end gap-1 p-2 bg-gray-100 border border-gray-300 rounded-t-lg border-b-0">
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className="px-3 py-1 border rounded"
+          className={`w-9 h-9 flex items-center justify-center rounded transition-all ${
+            editor.isActive('bold')
+              ? 'bg-blue-600 text-white shadow-md'
+              : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-300'
+          }`}
+          title="Bold (Ctrl+B)"
         >
-          Bold
+          <span className="font-bold text-lg">B</span>
         </button>
 
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className="px-3 py-1 border rounded"
+          className={`w-9 h-9 flex items-center justify-center rounded transition-all ${
+            editor.isActive('italic')
+              ? 'bg-blue-600 text-white shadow-md'
+              : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-300'
+          }`}
+          title="Italic (Ctrl+I)"
         >
-          Italic
+          <span className="italic text-lg font-serif">I</span>
         </button>
+
+        
 
         <button
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className="px-3 py-1 border rounded"
+          className={`w-9 h-9 flex items-center justify-center rounded transition-all ${
+            editor.isActive('heading', { level: 2 })
+              ? 'bg-blue-600 text-white shadow-md'
+              : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-300'
+          }`}
+          title="Heading 2"
         >
-          H2
+          <span className="font-bold text-sm">H2</span>
         </button>
       </div>
 
       {/* Editor Area */}
-      <div className="border p-4 min-h-[400px] bg-white letter-editor-content">
+      <div className="border border-gray-300 p-4 min-h-[400px] bg-white rounded-b-lg letter-editor-content">
         <EditorContent editor={editor} />
       </div>
     </div>
