@@ -2,42 +2,94 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
 interface AuthContextType {
-  token: string | null;
-  role: string | null;
-  login: (token: string) => void;
+  userToken: string | null;
+  adminToken: string | null;
+  isLoggedIn: boolean;
+  isAdminLoggedIn: boolean;
+  loginUser: (token: string) => void;
+  loginAdmin: (token: string) => void;
+  logoutUser: () => void;
+  logoutAdmin: () => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: any) => {
-  const [token, setToken] = useState<string | null>(null);
-  const [role, setRole] = useState<string | null>(null);
+  const [userToken, setUserToken] = useState<string | null>(null);
+  const [adminToken, setAdminToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-      const decoded: any = jwtDecode(storedToken);
-      setRole(decoded.role || "USER");
+    const storedUserToken = localStorage.getItem("userToken");
+    const storedAdminToken = localStorage.getItem("adminToken");
+
+    if (storedUserToken) {
+      setUserToken(storedUserToken);
+    }
+
+    if (storedAdminToken) {
+      setAdminToken(storedAdminToken);
+    }
+
+    const legacyToken = localStorage.getItem("token");
+    if (legacyToken && !storedUserToken && !storedAdminToken) {
+      try {
+        const decoded: any = jwtDecode(legacyToken);
+        if (decoded.role === "ADMIN") {
+          localStorage.setItem("adminToken", legacyToken);
+          setAdminToken(legacyToken);
+        } else {
+          localStorage.setItem("userToken", legacyToken);
+          setUserToken(legacyToken);
+        }
+      } finally {
+        localStorage.removeItem("token");
+      }
     }
   }, []);
 
-  const login = (newToken: string) => {
-    localStorage.setItem("token", newToken);
-    setToken(newToken);
-    const decoded: any = jwtDecode(newToken);
-    setRole(decoded.role || "USER");
+  const loginUser = (newToken: string) => {
+    localStorage.setItem("userToken", newToken);
+    setUserToken(newToken);
+  };
+
+  const loginAdmin = (newToken: string) => {
+    localStorage.setItem("adminToken", newToken);
+    setAdminToken(newToken);
+  };
+
+  const logoutUser = () => {
+    localStorage.removeItem("userToken");
+    setUserToken(null);
+  };
+
+  const logoutAdmin = () => {
+    localStorage.removeItem("adminToken");
+    setAdminToken(null);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
-    setToken(null);
-    setRole(null);
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("adminToken");
+    setUserToken(null);
+    setAdminToken(null);
   };
 
   return (
-    <AuthContext.Provider value={{ token, role, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        userToken,
+        adminToken,
+        isLoggedIn: Boolean(userToken),
+        isAdminLoggedIn: Boolean(adminToken),
+        loginUser,
+        loginAdmin,
+        logoutUser,
+        logoutAdmin,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

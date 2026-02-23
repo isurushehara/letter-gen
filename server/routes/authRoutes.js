@@ -7,6 +7,10 @@ router.post("/register", authController.register);
 router.post("/login", authController.login);
 router.post("/admin/login", authController.adminLogin);
 
+// Self profile routes (any authenticated user)
+router.get("/profile", authenticate, authController.getProfile);
+router.put("/profile", authenticate, authController.updateProfile);
+
 // Admin user management routes
 router.get("/users", authenticate, authorizeAdmin, authController.getAllUsers);
 router.get("/users/search", authenticate, authorizeAdmin, authController.searchUsers);

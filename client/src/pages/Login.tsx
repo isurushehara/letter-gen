@@ -9,7 +9,7 @@ export default function Login() {
   });
 
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { loginUser } = useAuth();
 
   const handleLogin = async () => {
     const res = await fetch("http://localhost:5000/api/auth/login", {
@@ -21,7 +21,7 @@ export default function Login() {
     const data = await res.json();
 
     if (res.ok) {
-      login(data.token);
+      loginUser(data.token);
       alert("Login successful!");
       navigate("/");
     } else {

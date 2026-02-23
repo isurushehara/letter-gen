@@ -9,13 +9,13 @@ export default function AdminLogin() {
   });
 
   const navigate = useNavigate();
-  const { login, role, token } = useAuth();
+  const { loginAdmin, adminToken } = useAuth();
 
   useEffect(() => {
-    if (token && role === "ADMIN") {
+    if (adminToken) {
       navigate("/admin", { replace: true });
     }
-  }, [token, role, navigate]);
+  }, [adminToken, navigate]);
 
   const handleLogin = async () => {
     const res = await fetch("http://localhost:5000/api/auth/admin/login", {
@@ -27,11 +27,11 @@ export default function AdminLogin() {
     const data = await res.json();
 
     if (res.ok) {
-      login(data.token);
+      loginAdmin(data.token);
       alert("Admin login successful!");
       navigate("/admin");
     } else {
-      alert(data.error);
+      alert(data.error || "Admin login failed");
     }
   };
 

@@ -7,6 +7,7 @@ router.post("/", authenticate, letterController.createLetter);
 router.get("/", authenticate, letterController.getLetters);
 router.get("/:id", authenticate, letterController.getLetterById);
 router.put("/:id", authenticate, letterController.updateLetter);
+router.delete("/:id", authenticate, letterController.deleteLetter);
 router.post("/generate-pdf", letterController.generatePDF);
 //router.post("/", authenticate, templateController.createTemplate);
 //router.delete("/:id", authenticate, authorizeAdmin, templateController.deleteTemplate);

@@ -43,7 +43,7 @@ export default function AdminDashboard() {
     content: "",
   });
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   const fetchUsers = useCallback(async () => {
     const res = await fetch("http://localhost:5000/api/auth/users", {
