@@ -49,26 +49,113 @@ export default function Home() {
     const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-50">
             <Navbar />
 
-            <div className="max-w-7xl mx-auto px-6 py-8">
+            {/* Hero Section */}
+            <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">
+                <div className="max-w-7xl mx-auto px-6 py-20 md:py-28">
+                    <div className="text-center max-w-4xl mx-auto">
+                        <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                            Create Professional Letters in Minutes
+                        </h1>
+                        <p className="text-xl md:text-2xl mb-8 text-blue-100 leading-relaxed">
+                            Choose from our extensive library of letter templates for any occasion. 
+                            Generate personalized, well-formatted letters effortlessly.
+                        </p>
+                        
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                            <button
+                                onClick={() => {
+                                    if (token) {
+                                        // Scroll to templates section
+                                        document.getElementById('templates-section')?.scrollIntoView({ 
+                                            behavior: 'smooth' 
+                                        });
+                                    } else {
+                                        navigate('/register');
+                                    }
+                                }}
+                                className="px-8 py-4 bg-white text-blue-700 rounded-lg font-semibold text-lg hover:bg-blue-50 transform hover:scale-105 transition-all shadow-lg"
+                            >
+                                {token ? 'Browse Templates' : 'Get Started Free'}
+                            </button>
+                            
+                            {!token && (
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-700 transform hover:scale-105 transition-all"
+                                >
+                                    Sign In
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Features highlights */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+                            <div className="flex flex-col items-center">
+                                <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-lg font-semibold mb-2">100+ Templates</h3>
+                                <p className="text-blue-100 text-sm">Professional templates for every need</p>
+                            </div>
+                            
+                            <div className="flex flex-col items-center">
+                                <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-lg font-semibold mb-2">Instant Generation</h3>
+                                <p className="text-blue-100 text-sm">Create letters in seconds, not hours</p>
+                            </div>
+                            
+                            <div className="flex flex-col items-center">
+                                <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-lg font-semibold mb-2">Save & Manage</h3>
+                                <p className="text-blue-100 text-sm">Keep all your letters organized</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Templates Section */}
+            <div id="templates-section" className="max-w-7xl mx-auto px-6 py-12">
                 {/* Header row */}
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold">Letter Templates</h1>
+                <div className="mb-8">
+                    <h2 className="text-3xl font-bold text-gray-800 mb-2">Letter Templates</h2>
+                    <p className="text-gray-600">Choose a template to get started</p>
                 </div>
 
                 {/* Filters */}
-                <div className="flex gap-4 mb-6">
-                    <input
-                        type="text"
-                        placeholder="Search templates..."
-                        className="flex-1 p-2 border rounded"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
+                <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                    <div className="flex-1 relative">
+                        <input
+                            type="text"
+                            placeholder="Search templates..."
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                        <svg 
+                            className="absolute right-3 top-3.5 w-5 h-5 text-gray-400" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
                     <select
-                        className="p-2 border rounded"
+                        className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
                     >
@@ -81,18 +168,38 @@ export default function Home() {
 
                 {/* 4-column grid */}
                 {paginated.length === 0 ? (
-                    <p className="text-gray-500 text-center py-16">No templates found.</p>
+                    <div className="text-center py-16">
+                        <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p className="text-gray-500 text-lg">No templates found.</p>
+                        <p className="text-gray-400 text-sm mt-2">Try adjusting your search or filters</p>
+                    </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {paginated.map((template) => (
                             <div
                                 key={template.id}
-                                className="bg-white p-5 rounded shadow flex flex-col justify-between"
+                                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between border border-gray-100 hover:border-blue-200"
                             >
                                 <div>
-                                    <h2 className="text-lg font-semibold mb-1">{template.title}</h2>
-                                    <p className="text-sm text-gray-500">Category: {template.category}</p>
-                                    <p className="text-sm text-gray-500">Tone: {template.tone}</p>
+                                    <div className="flex items-start justify-between mb-3">
+                                        <h3 className="text-lg font-semibold text-gray-800 leading-tight">{template.title}</h3>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center text-sm text-gray-600">
+                                            <svg className="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                            </svg>
+                                            {template.category}
+                                        </div>
+                                        <div className="flex items-center text-sm text-gray-600">
+                                            <svg className="w-4 h-4 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                            </svg>
+                                            {template.tone}
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <button
@@ -104,10 +211,10 @@ export default function Home() {
                                         }
                                         navigate(`/generator/${template.id}`);
                                     }}
-                                    className={`mt-4 px-4 py-2 rounded text-sm ${
+                                    className={`mt-5 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                                         token
-                                            ? "bg-blue-600 text-white hover:bg-blue-700"
-                                            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                            ? "bg-blue-600 text-white hover:bg-blue-700 transform hover:scale-105"
+                                            : "bg-gray-100 text-gray-400 cursor-not-allowed"
                                     }`}
                                 >
                                     {token ? "Use Template" : "Login to Use"}
@@ -119,11 +226,11 @@ export default function Home() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="flex items-center justify-center gap-2 mt-8">
+                    <div className="flex items-center justify-center gap-2 mt-12">
                         <button
                             onClick={() => setPage((p) => Math.max(1, p - 1))}
                             disabled={page === 1}
-                            className="px-3 py-1 rounded border bg-white disabled:opacity-40"
+                            className="px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium text-gray-700"
                         >
                             ← Prev
                         </button>
@@ -132,10 +239,10 @@ export default function Home() {
                             <button
                                 key={p}
                                 onClick={() => setPage(p)}
-                                className={`px-3 py-1 rounded border ${
+                                className={`px-4 py-2 rounded-lg border font-medium transition-all ${
                                     p === page
-                                        ? "bg-blue-600 text-white border-blue-600"
-                                        : "bg-white hover:bg-gray-50"
+                                        ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                                 }`}
                             >
                                 {p}
@@ -145,7 +252,7 @@ export default function Home() {
                         <button
                             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                             disabled={page === totalPages}
-                            className="px-3 py-1 rounded border bg-white disabled:opacity-40"
+                            className="px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium text-gray-700"
                         >
                             Next →
                         </button>
