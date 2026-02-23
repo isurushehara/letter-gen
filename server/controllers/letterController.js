@@ -34,6 +34,11 @@ exports.getLetters = async (req, res) => {
     const letters = await prisma.letter.findMany({
       where: { userId: req.user.id },
       orderBy: { createdAt: "desc" },
+      include: {
+        template: {
+          select: { category: true, title: true },
+        },
+      },
     });
 
     res.json(letters);
@@ -94,6 +99,33 @@ exports.updateLetter = async (req, res) => {
     res.json(updated);
   } catch (error) {
     res.status(500).json({ error: "Failed to update letter" });
+  }
+};
+
+// DELETE LETTER
+exports.deleteLetter = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingLetter = await prisma.letter.findUnique({
+      where: { id },
+    });
+
+    if (!existingLetter) {
+      return res.status(404).json({ error: "Letter not found" });
+    }
+
+    if (existingLetter.userId !== req.user.id) {
+      return res.status(403).json({ error: "Access denied" });
+    }
+
+    await prisma.letter.delete({
+      where: { id },
+    });
+
+    res.json({ message: "Letter deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete letter" });
   }
 };
 

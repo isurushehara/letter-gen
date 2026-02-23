@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
@@ -19,13 +19,20 @@ export default function Home() {
     const [categoryFilter, setCategoryFilter] = useState("");
     const [page, setPage] = useState(1);
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("userToken");
 
     useEffect(() => {
         fetch("http://localhost:5000/api/templates")
             .then((res) => res.json())
             .then((data) => setTemplates(data));
     }, []);
+
+    // Derive unique sorted categories from whatever templates exist
+    const categories = useMemo(() => {
+        return Array.from(
+            new Set(templates.map((t) => t.category?.trim()).filter(Boolean))
+        ).sort((a, b) => a.localeCompare(b));
+    }, [templates]);
 
     // Reset to first page whenever filters change
     useEffect(() => {
@@ -47,16 +54,8 @@ export default function Home() {
 
             <div className="max-w-7xl mx-auto px-6 py-8">
                 {/* Header row */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="mb-6">
                     <h1 className="text-3xl font-bold">Letter Templates</h1>
-                    {token && (
-                        <button
-                            onClick={() => navigate("/letters")}
-                            className="bg-green-600 text-white px-4 py-2 rounded"
-                        >
-                            View Saved Letters
-                        </button>
-                    )}
                 </div>
 
                 {/* Filters */}
@@ -74,9 +73,9 @@ export default function Home() {
                         onChange={(e) => setCategoryFilter(e.target.value)}
                     >
                         <option value="">All Categories</option>
-                        <option value="Formal">Formal</option>
-                        <option value="Business">Business</option>
-                        <option value="Academic">Academic</option>
+                        {categories.map((cat) => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
                     </select>
                 </div>
 
