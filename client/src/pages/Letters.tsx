@@ -18,6 +18,8 @@ export default function Letters() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const API = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     const token = localStorage.getItem("userToken");
     if (!token) {
@@ -27,10 +29,10 @@ export default function Letters() {
 
     // Fetch letters and template categories in parallel
     Promise.all([
-      fetch("http://localhost:5000/api/letters", {
+      fetch(`${API}/api/letters`, {
         headers: { Authorization: `Bearer ${token}` },
       }).then((r) => r.json()),
-      fetch("http://localhost:5000/api/templates").then((r) => r.json()),
+      fetch(`${API}/api/templates`).then((r) => r.json()),
     ]).then(([letterData, templateData]) => {
       setLetters(Array.isArray(letterData) ? letterData : []);
 

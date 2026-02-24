@@ -11,6 +11,8 @@ export default function AdminLogin() {
   const navigate = useNavigate();
   const { loginAdmin, adminToken } = useAuth();
 
+  const API = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     if (adminToken) {
       navigate("/admin", { replace: true });
@@ -18,7 +20,7 @@ export default function AdminLogin() {
   }, [adminToken, navigate]);
 
   const handleLogin = async () => {
-    const res = await fetch("http://localhost:5000/api/auth/admin/login", {
+    const res = await fetch(`${API}/api/auth/admin/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),

@@ -44,9 +44,10 @@ export default function AdminDashboard() {
   });
 
   const token = localStorage.getItem("adminToken");
+  const API = process.env.REACT_APP_API_URL;
 
   const fetchUsers = useCallback(async () => {
-    const res = await fetch("http://localhost:5000/api/auth/users", {
+    const res = await fetch(`${API}/api/auth/users`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
@@ -56,7 +57,7 @@ export default function AdminDashboard() {
   }, [token]);
 
   const fetchTemplates = useCallback(async () => {
-    const res = await fetch("http://localhost:5000/api/templates");
+    const res = await fetch(`${API}/api/templates`);
     if (res.ok) {
       const data = await res.json();
       setTemplates(data);
@@ -78,7 +79,7 @@ export default function AdminDashboard() {
     }
 
     const res = await fetch(
-      `http://localhost:5000/api/auth/users/search?email=${searchEmail}`,
+      `${API}/api/auth/users/search?email=${searchEmail}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -92,7 +93,7 @@ export default function AdminDashboard() {
   const handleDeleteUser = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
-    const res = await fetch(`http://localhost:5000/api/auth/users/${id}`, {
+    const res = await fetch(`${API}/api/auth/users/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -109,7 +110,7 @@ export default function AdminDashboard() {
     if (!editingUser) return;
 
     const res = await fetch(
-      `http://localhost:5000/api/auth/users/${editingUser.id}`,
+      `${API}/api/auth/users/${editingUser.id}`,
       {
         method: "PUT",
         headers: {
@@ -139,7 +140,7 @@ export default function AdminDashboard() {
       return;
     }
 
-    const res = await fetch("http://localhost:5000/api/templates", {
+    const res = await fetch(`${API}/api/templates`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -169,7 +170,7 @@ export default function AdminDashboard() {
   const handleDeleteTemplate = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this template?")) return;
 
-    const res = await fetch(`http://localhost:5000/api/templates/${id}`, {
+    const res = await fetch(`${API}/api/templates/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -186,7 +187,7 @@ export default function AdminDashboard() {
     if (!editingTemplate) return;
 
     const res = await fetch(
-      `http://localhost:5000/api/templates/${editingTemplate.id}`,
+      `${API}/api/templates/${editingTemplate.id}`,
       {
         method: "PUT",
         headers: {

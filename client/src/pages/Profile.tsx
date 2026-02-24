@@ -19,6 +19,8 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const API = process.env.REACT_APP_API_URL;
+
   // Edit name
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState("");
@@ -42,7 +44,7 @@ export default function ProfilePage() {
 
   const fetchProfile = async () => {
     setLoading(true);
-    const res = await fetch("http://localhost:5000/api/auth/profile", {
+    const res = await fetch(`${API}/api/auth/profile`, {
       headers: { Authorization: `Bearer ${userToken}` },
     });
     if (res.ok) {
@@ -63,7 +65,7 @@ export default function ProfilePage() {
     }
     setNameLoading(true);
     setNameError("");
-    const res = await fetch("http://localhost:5000/api/auth/profile", {
+    const res = await fetch(`${API}/api/auth/profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +99,7 @@ export default function ProfilePage() {
       return;
     }
     setPwLoading(true);
-    const res = await fetch("http://localhost:5000/api/auth/profile", {
+    const res = await fetch(`${API}/api/auth/profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

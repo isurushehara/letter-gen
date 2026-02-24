@@ -22,10 +22,12 @@ export default function Home() {
     const [page, setPage] = useState(1);
     const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
 
+    const API = process.env.REACT_APP_API_URL;
+
     const token = localStorage.getItem("userToken");
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/templates")
+        fetch(`${API}/api/templates`)
             .then((res) => res.json())
             .then((data) => setTemplates(data));
     }, []);
@@ -56,7 +58,7 @@ export default function Home() {
             navigate(`/generator/${template.id}`);
         } else {
             // Fetch full template details for preview
-            const res = await fetch(`http://localhost:5000/api/templates`);
+            const res = await fetch(`${API}/api/templates`);
             const allTemplates = await res.json();
             const fullTemplate = allTemplates.find((t: Template) => t.id === template.id);
             setPreviewTemplate(fullTemplate || template);
@@ -65,7 +67,7 @@ export default function Home() {
 
     const handlePreviewClick = async (template: Template) => {
         // Fetch full template details for preview
-        const res = await fetch(`http://localhost:5000/api/templates`);
+        const res = await fetch(`${API}/api/templates`);
         const allTemplates = await res.json();
         const fullTemplate = allTemplates.find((t: Template) => t.id === template.id);
         setPreviewTemplate(fullTemplate || template);
