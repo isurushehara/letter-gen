@@ -46,9 +46,11 @@ export default function Generator() {
 
   const [generatedLetter, setGeneratedLetter] = useState("");
 
+  const API = process.env.REACT_APP_API_URL;
+
   // Fetch template
   useEffect(() => {
-    fetch("http://localhost:5000/api/templates")
+    fetch(`${API}/api/templates`)
       .then((res) => res.json())
       .then((data) => {
         const found = data.find((t: Template) => t.id === id);
@@ -223,7 +225,7 @@ export default function Generator() {
                       return;
                     }
 
-                    const response = await fetch("http://localhost:5000/api/letters", {
+                    const response = await fetch(`${API}/api/letters`, {
                       method: "POST",
                       headers: {
                         "Content-Type": "application/json",

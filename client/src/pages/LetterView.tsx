@@ -55,6 +55,8 @@ export default function LetterView() {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [content, setContent] = useState("");
 
+  const API = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     const token = localStorage.getItem("userToken");
 
@@ -62,7 +64,7 @@ export default function LetterView() {
       return;
     }
 
-    fetch(`http://localhost:5000/api/letters/${id}`, {
+    fetch(`${API}/api/letters/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -75,7 +77,7 @@ export default function LetterView() {
           return;
         }
 
-        fetch("http://localhost:5000/api/templates")
+        fetch(`${API}/api/templates`)
           .then((res) => res.json())
           .then((templates: Template[]) => {
             const matchedTemplate = templates.find((t) => t.id === data.templateId);
@@ -129,7 +131,7 @@ export default function LetterView() {
       return;
     }
 
-    await fetch(`http://localhost:5000/api/letters/${id}`, {
+    await fetch(`${API}/api/letters/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -154,7 +156,7 @@ export default function LetterView() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/letters/${id}`, {
+      const response = await fetch(`${API}/api/letters/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -291,7 +293,7 @@ export default function LetterView() {
                 <button
                   onClick={async () => {
                     const response = await fetch(
-                      "http://localhost:5000/api/letters/generate-pdf",
+                      `${API}/api/letters/generate-pdf`,
                       {
                         method: "POST",
                         headers: {
