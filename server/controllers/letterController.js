@@ -138,6 +138,12 @@ exports.generatePDF = async (req, res) => {
       return res.status(400).json({ error: "Content is required" });
     }
 
+    // Convert basic HTML to formatted text
+    let formattedContent = content
+      .replace(/<br\s*\/?>/gi, "\n")          // convert <br> to newline
+      .replace(/<\/p>/gi, "\n\n")             // paragraph spacing
+      .replace(/<[^>]*>/g, "");               // remove remaining tags
+
     const doc = new PDFDocument({
       size: "A4",
       margin: 50,
@@ -151,10 +157,12 @@ exports.generatePDF = async (req, res) => {
 
     doc.pipe(res);
 
-    doc.font("Times-Roman")
+    doc
+      .font("Times-Roman")
       .fontSize(12)
-      .text(content.replace(/<[^>]*>/g, ""), {
+      .text(formattedContent, {
         align: "left",
+        lineGap: 4,
       });
 
     doc.end();
