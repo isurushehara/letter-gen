@@ -1,5 +1,5 @@
 const prisma = require("../prismaClient");
-const puppeteer = require("puppeteer-core");
+const puppeteer = require("puppeteer");
 
 // CREATE LETTER
 exports.createLetter = async (req, res) => {
@@ -139,7 +139,6 @@ exports.generatePDF = async (req, res) => {
     }
 
     const browser = await puppeteer.launch({
-      executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
