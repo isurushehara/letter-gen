@@ -1,5 +1,5 @@
 const prisma = require("../prismaClient");
-const puppeteer = require("puppeteer");
+const PDFDocument = require("pdfkit");
 
 // CREATE LETTER
 exports.createLetter = async (req, res) => {
@@ -138,74 +138,28 @@ exports.generatePDF = async (req, res) => {
       return res.status(400).json({ error: "Content is required" });
     }
 
-    const browser = await puppeteer.launch({
-      headless: "new",
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--no-first-run",
-        "--no-zygote",
-        "--single-process",
-      ],
+    const doc = new PDFDocument({
+      size: "A4",
+      margin: 50,
     });
 
-    const page = await browser.newPage();
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${title || "letter"}.pdf"`
+    );
 
-    // Create full HTML document
-    const html = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <style>
-    @page {
-      size: A4;
-      margin: 1in;
-    }
+    doc.pipe(res);
 
-    body {
-      font-family: "Times New Roman", serif;
-      font-size: 16px;
-      line-height: 1.8;
-    }
+    doc.font("Times-Roman")
+      .fontSize(12)
+      .text(content.replace(/<[^>]*>/g, ""), {
+        align: "left",
+      });
 
-    .letter-container {
-      width: 100%;
-    }
-
-    p {
-      margin: 0 0 16px 0;
-    }
-  </style>
-</head>
-<body>
-  <div class="letter-container">
-    ${content}
-  </div>
-</body>
-</html>
-`;
-
-    await page.setContent(html, { waitUntil: "networkidle0" });
-
-    const pdf = await page.pdf({
-      format: "A4",
-      printBackground: true,
-    });
-
-    await browser.close();
-
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${title || "letter"}.pdf"`,
-    });
-
-    res.send(pdf);
+    doc.end();
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to generate PDF" });
   }
 };
-
